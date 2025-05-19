@@ -8,7 +8,7 @@ export default function Home() {
       <h1 className="text-white text-xl">NIHONGO VOCA</h1>
 
       <Link
-        href="levels"
+        href="level"
         className="bg-[#2d2d2d] w-full h-20 rounded flex justify-center items-center text-white"
       >
         공부하러 가기
