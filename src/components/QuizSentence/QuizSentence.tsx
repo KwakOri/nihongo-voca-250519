@@ -8,7 +8,6 @@ interface QuizSentenceProps {
 }
 
 const QuizSentence = ({
-  type,
   tokens,
   targetWord,
   isRoundEnded,
