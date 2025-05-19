@@ -1,10 +1,7 @@
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
-interface LevelNavBarProps {
-  level: number;
-}
-
-const LevelNavBar = ({ level }: LevelNavBarProps) => {
+const LevelNavBar = () => {
+  const { level } = useParams();
   const navigate = useRouter();
 
   const onGoBackButtonClick = () => {
