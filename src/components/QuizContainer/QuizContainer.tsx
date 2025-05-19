@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import QuizSentence from "../QuizSentence";
 
 import { useLocation, useNavigate } from "react-router";
-import { WordData } from "../../components/RubyWord/RubyWord";
 import sentences from "../../db/sentences.json";
-import newSentences from "../../db/new-sentences.json";
 import words from "../../db/words.json";
+import { WordData } from "../JPParagraph/JPParagraph";
 
 interface QuizContainerProps {
   quizWords: WordData[];
