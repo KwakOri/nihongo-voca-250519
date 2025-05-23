@@ -6,6 +6,7 @@ const DaysContainer = () => {
   const { level } = useParams();
 
   const { data, isPending } = useGetWordsCountByDay();
+
   if (!data || isPending) return <div>Loading...</div>;
 
   return (

@@ -7,11 +7,17 @@ import { Word } from "@/types/words";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 
+interface WordWithQuiz extends Word {
+  quiz: { type: number }[];
+}
+
 const DayPage = () => {
   const { level, day } = useParams();
   const navigate = useRouter();
 
   const { data, isPending } = useGetWordsByDay({ day: Number(day) });
+
+  console.log(data);
 
   const onGoBackButtonClick = () => {
     navigate.back();
@@ -47,12 +53,33 @@ const DayPage = () => {
       </div>
 
       <div className={"flex flex-col gap-4"}>
-        {data.map((word: Word) => {
+        {data.map((word: WordWithQuiz) => {
+          const allTypes = [1, 2, 3];
+          const typeNumbers = word.quiz.map((item) => Number(item.type));
           return (
             <div
-              className={`rounded-xl bg-[#2d2d2d] w-full aspect-square flex flex-col justify-center items-center gap-10`}
+              className={`rounded-xl bg-[#2d2d2d] w-full aspect-square flex flex-col justify-center items-center gap-10 relative`}
               key={word.id}
             >
+              <div className={`absolute top-4 right-4 flex gap-1`}>
+                {allTypes.map((type) => {
+                  return (
+                    <div
+                      className={`flex flex-col items-center`}
+                      key={`${word.id}-${type}`}
+                    >
+                      <p>{type === 1 ? "あ" : type === 2 ? "漢" : "한"}</p>
+                      <div
+                        className={`rounded-full h-4 w-4 ${
+                          typeNumbers.includes(type)
+                            ? "bg-white"
+                            : "bg-[#444444]"
+                        }`}
+                      ></div>
+                    </div>
+                  );
+                })}
+              </div>
               <JPParagraph tokens={word.tokens} meaning={word.meaning} />
               {/* <div>
                 <RubySentence tokens={sentence?.tokens} />

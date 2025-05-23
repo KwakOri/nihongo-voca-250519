@@ -5,11 +5,10 @@ interface GetWordsOfDayProps {
 }
 
 export const getWordsCountByAllDays = async () => {
-  const { data, error } = await supabase.from("words").select("day");
+  const { data, error } = await supabase.from("words").select(`day`);
   if (error) {
     throw new Error(error.message);
   }
-
   // 개수를 집계
   const countByDay = data.reduce((acc: Record<number, number>, { day }) => {
     acc[day] = (acc[day] || 0) + 1;
@@ -25,10 +24,34 @@ export const getWordsCountByAllDays = async () => {
 export const getWordsOfDay = async ({ day }: GetWordsOfDayProps) => {
   const { data, error } = await supabase
     .from("words")
-    .select("*")
+    .select("*, quiz(type)")
     .eq("day", day);
   if (error) {
     throw new Error(error.message);
   }
+  return data;
+};
+
+export const getWords = async () => {
+  const { data, error } = await supabase
+    .from("words")
+    .select("id, word, meaning")
+    .range(0, 10);
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data;
+};
+
+export const getWordsWithQuiz = async () => {
+  const { data, error } = await supabase.from("words").select(`
+      *,
+      quiz(*)
+    `);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
   return data;
 };
