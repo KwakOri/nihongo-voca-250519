@@ -3,13 +3,10 @@
 import JPParagraph from "@/components/JPParagraph";
 // import RubySentence from "@/components/RubySentence/RubySentence";
 import { useGetWordsByDay } from "@/queries/words";
-import { Word } from "@/types/words";
+import { DBWordWithQuiz } from "@/types/words";
+
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-
-interface WordWithQuiz extends Word {
-  quiz: { type: number }[];
-}
 
 const DayPage = () => {
   const { level, day } = useParams();
@@ -45,7 +42,7 @@ const DayPage = () => {
           N{level} DAY {day}
         </p>
         <Link
-          href={"quiz"}
+          href={`${day}/quiz/3`}
           className="rounded bg-[#2d2d2d] w-full h-full flex justify-center items-center text-white text-xs hover:brightness-125"
         >
           QUIZ
@@ -53,7 +50,7 @@ const DayPage = () => {
       </div>
 
       <div className={"flex flex-col gap-4"}>
-        {data.map((word: WordWithQuiz) => {
+        {data.map((word: DBWordWithQuiz) => {
           const allTypes = [1, 2, 3];
           const typeNumbers = word.quiz.map((item) => Number(item.type));
           return (

@@ -4,6 +4,10 @@ interface GetWordsOfDayProps {
   day: number;
 }
 
+interface GetWordsWithQuizByDayProps {
+  day: number;
+}
+
 export const getWordsCountByAllDays = async () => {
   const { data, error } = await supabase.from("words").select(`day`);
   if (error) {
@@ -43,11 +47,18 @@ export const getWords = async () => {
   return data;
 };
 
-export const getWordsWithQuiz = async () => {
-  const { data, error } = await supabase.from("words").select(`
+export const getWordsWithQuizByDay = async ({
+  day,
+}: GetWordsWithQuizByDayProps) => {
+  const { data, error } = await supabase
+    .from("words")
+    .select(
+      `
       *,
       quiz(*)
-    `);
+    `
+    )
+    .eq("day", day);
 
   if (error) {
     throw new Error(error.message);
