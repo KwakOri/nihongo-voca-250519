@@ -208,6 +208,7 @@ const QuizPage = () => {
       if (!raw) return;
 
       const meta = JSON.parse(raw);
+      console.log("meta => ", meta);
       await saveQuizData(meta);
       router.push(`/level/${level}`);
     } catch (error) {

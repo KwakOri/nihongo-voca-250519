@@ -7,7 +7,7 @@ export async function saveQuizData(meta: {
   total: number;
   currentIndex: number;
   quizOrder: number[];
-  scoreBoard: { index: number; correct: boolean }[];
+  scoreBoard: { wordId: number; isCorrect: boolean; order: number }[];
 }) {
   const sessionRes = await supabase.auth.getSession();
   const userId = sessionRes.data.session?.user?.id;
@@ -20,9 +20,9 @@ export async function saveQuizData(meta: {
   // ✅ 1. word_logs (중복 없이 upsert)
   const wordLogRows = scoreBoard.map((item) => ({
     user_id: userId,
-    word_id: quizOrder[item.index],
+    word_id: item.wordId,
     quiz_type: type,
-    is_correct: item.correct,
+    is_correct: item.isCorrect,
     attempted_at: now,
   }));
 
@@ -35,7 +35,7 @@ export async function saveQuizData(meta: {
   }
 
   // ✅ 2. quiz_logs (퀴즈 세트 단위 기록)
-  const correctCount = scoreBoard.filter((s) => s.correct).length;
+  const correctCount = scoreBoard.filter((s) => s.isCorrect).length;
 
   const quizLogRes = await supabase.from("quiz_logs").insert([
     {
@@ -46,8 +46,8 @@ export async function saveQuizData(meta: {
       total,
       correct_count: correctCount,
       score_board: scoreBoard.map((s) => ({
-        word_id: quizOrder[s.index],
-        correct: s.correct,
+        word_id: s.wordId,
+        correct: s.isCorrect,
       })),
       submitted_at: now,
     },
