@@ -14,7 +14,7 @@ export async function registerUser({
     email,
     password,
     options: {
-      emailRedirectTo: "https://easyjlpt.site/login",
+      emailRedirectTo: "https://easyjlpt.site",
     },
   });
 
