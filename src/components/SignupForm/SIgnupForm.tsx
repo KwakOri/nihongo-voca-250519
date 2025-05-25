@@ -1,35 +1,28 @@
 "use client";
 
-import { supabase } from "@/db/supabase";
+import { registerUser } from "@/services/auth/signup";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignupForm() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSignup = async () => {
     setLoading(true);
     setMessage(null);
+    setError(null);
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: "https://easyjlpt.site/login",
-      },
-    });
+    const result = await registerUser({ email, password, name });
 
-    if (error) {
-      setMessage(error.message);
+    if (!result.success) {
+      setError(result.error ?? "알 수 없는 오류");
     } else {
-      setMessage("인증 메일을 발송했습니다.");
-      alert("이메일 확인을 위해 메일함을 확인해주세요.");
-      router.push("/login"); // 자동 리디렉션 시 사용
+      setMessage("가입이 완료되었습니다! 이메일을 확인해 인증을 완료해주세요.");
     }
 
     setLoading(false);
@@ -38,16 +31,23 @@ export default function SignupForm() {
   return (
     <div className="w-full max-w-sm space-y-4">
       <input
+        type="text"
+        placeholder="이름"
         className="w-full p-2 rounded bg-gray-800 text-white"
-        placeholder="이메일"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <input
         type="email"
+        placeholder="이메일"
+        className="w-full p-2 rounded bg-gray-800 text-white"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
-        className="w-full p-2 rounded bg-gray-800 text-white"
-        placeholder="비밀번호"
         type="password"
+        placeholder="비밀번호"
+        className="w-full p-2 rounded bg-gray-800 text-white"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
@@ -58,7 +58,9 @@ export default function SignupForm() {
       >
         {loading ? "가입 중..." : "회원가입"}
       </button>
-      {message && <p className="text-sm text-yellow-400">{message}</p>}
+
+      {message && <p className="text-green-400 text-sm">{message}</p>}
+      {error && <p className="text-red-400 text-sm">{error}</p>}
       <Link href={"/login"}>
         <button className="w-full p-2 bg-gray-800 rounded text-white">
           이미 계정이 있습니다
