@@ -43,7 +43,6 @@ const QuizPage = () => {
     day: Number(day),
   });
 
-  console.log(data);
   const [isQuizStarted, setIsQuizStarted] = useState(false);
   const [quizMeta, setQuizMeta] = useState<TQuizMeta>({
     total: 0,
@@ -210,7 +209,6 @@ const QuizPage = () => {
 
   if (!isQuizStarted || isPending) return <div>Loading...</div>;
 
-  console.log("quizMeta.total => ", quizMeta.total);
   return (
     <div className="w-hull h-full flex flex-col">
       <QuizNavBar total={quizMeta.total} correct={quizMeta.currentIndex + 1} />

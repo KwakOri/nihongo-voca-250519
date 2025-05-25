@@ -14,8 +14,6 @@ const DayPage = () => {
 
   const { data, isPending } = useGetWordsByDay({ day: Number(day) });
 
-  console.log(data);
-
   const onGoBackButtonClick = () => {
     navigate.back();
   };
@@ -42,14 +40,14 @@ const DayPage = () => {
           N{level} DAY {day}
         </p>
         <Link
-          href={`${day}/quiz/3`}
+          href={`${day}/quiz`}
           className="rounded bg-[#2d2d2d] w-full h-full flex justify-center items-center text-white text-xs hover:brightness-125"
         >
           QUIZ
         </Link>
       </div>
 
-      <div className={"flex flex-col gap-4"}>
+      <div className={"flex flex-col gap-2"}>
         {data.map((word: DBWordWithQuiz) => {
           const allTypes = [1, 2, 3];
           const typeNumbers = word.quiz.map((item) => Number(item.type));

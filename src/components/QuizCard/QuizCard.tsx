@@ -1,6 +1,6 @@
 "use client";
 
-import { TQuiz } from "@/app/(providers)/(root)/level/[level]/day/[day]/quiz/[type]/page";
+import { TQuiz } from "@/app/(providers)/(private)/level/[level]/day/[day]/quiz/[type]/page";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
