@@ -3,6 +3,7 @@
 import QuizCard from "@/components/QuizCard/QuizCard";
 import QuizNavBar from "@/components/QuizNavBar/QuizNavBar";
 import { useGetWordsWithQuizByDay } from "@/queries/words";
+import { saveQuizData } from "@/services/quiz";
 import { DBWordWithQuiz } from "@/types/words";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -206,6 +207,27 @@ const QuizPage = () => {
       return setIsQuizStarted(true);
     }
   }, [isPending]);
+
+  useEffect(() => {
+    const handleUnload = () => {
+      try {
+        const raw = localStorage.getItem("quiz-meta");
+        if (!raw) return;
+
+        const meta = JSON.parse(raw);
+
+        // 아직 퀴즈가 모두 끝나지 않았을 경우만 저장
+        if (meta.currentIndex < meta.total) {
+          saveQuizData(meta);
+        }
+      } catch (e) {
+        console.error("quiz-meta 저장 실패:", e);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleUnload);
+    return () => window.removeEventListener("beforeunload", handleUnload);
+  }, []);
 
   if (!isQuizStarted || isPending) return <div>Loading...</div>;
 
