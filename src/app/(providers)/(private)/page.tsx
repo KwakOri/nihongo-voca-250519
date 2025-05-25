@@ -1,14 +1,30 @@
 "use client";
 
+import { useAuth } from "@/providers/AuthProvider";
+import { logoutUser } from "@/services/auth/logout";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Home() {
+  const router = useRouter();
   const [savedQuiz, setSavedQuiz] = useState<null | {
     level: number;
     day: number;
     type: number;
   }>(null);
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      router.push("/login"); // 로그아웃 후 로그인 페이지로 이동
+    } catch (error) {
+      console.log(error);
+      alert("로그아웃 중 오류가 발생했습니다.");
+    }
+  };
+
+  const { profile, isLoading, session } = useAuth();
 
   useEffect(() => {
     const savedQuizRaw = localStorage.getItem("quiz-meta");
@@ -47,6 +63,12 @@ export default function Home() {
           )}
         </div>
       </div>
+      <button
+        onClick={handleLogout}
+        className="px-4 py-2 bg-red-600 text-white rounded"
+      >
+        로그아웃
+      </button>
     </div>
   );
 }
