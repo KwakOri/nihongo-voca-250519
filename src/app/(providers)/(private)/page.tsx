@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/providers/AuthProvider";
+import { useQuizProgress } from "@/queries/quiz";
 import { logoutUser } from "@/services/auth/logout";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,8 @@ export default function Home() {
     }
   };
 
-  const { profile, isLoading, session } = useAuth();
+  const { data: quizMeta } = useQuizProgress();
+  console.log(quizMeta);
 
   useEffect(() => {
     const savedQuizRaw = localStorage.getItem("quiz-meta");
