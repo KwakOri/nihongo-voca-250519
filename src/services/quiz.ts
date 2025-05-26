@@ -1,14 +1,24 @@
-import { supabase } from "@/db/supabase";
+"use client";
 
-export async function saveQuizData(meta: {
+import { supabase } from "@/db/supabase";
+import { queryClient } from "@/providers/QueryProvider/QueryProvider";
+import { QUIZ_PROGRESS_KEY } from "@/queries/quiz";
+
+interface SaveQuizDataInput {
   level: number;
   day: number;
   type: number;
   total: number;
   currentIndex: number;
   quizOrder: number[];
-  scoreBoard: { wordId: number; isCorrect: boolean; order: number }[];
-}) {
+  scoreBoard: {
+    wordId: number;
+    order: number;
+    isCorrect: boolean;
+  }[];
+}
+
+export async function saveQuizData(meta: SaveQuizDataInput) {
   const sessionRes = await supabase.auth.getSession();
   const userId = sessionRes.data.session?.user?.id;
   if (!userId) return;
@@ -17,27 +27,55 @@ export async function saveQuizData(meta: {
 
   const now = new Date().toISOString();
 
-  // ✅ 1. word_logs (중복 없이 upsert)
-  const wordLogRows = scoreBoard.map((item) => ({
+  // 🔹 1. 중도 저장 (미완료)
+  if (currentIndex < total) {
+    const { error } = await supabase.from("quiz_progress").upsert(
+      [
+        {
+          user_id: userId,
+          level,
+          day,
+          type,
+          current_index: currentIndex,
+          total,
+          quiz_order: quizOrder,
+          score_board: scoreBoard,
+          saved_at: now,
+        },
+      ],
+      { onConflict: "user_id" }
+    );
+
+    if (error) {
+      console.error("❌ quiz_progress 저장 실패:", error.message);
+    } else {
+      console.log("✅ quiz_progress 저장 완료");
+      queryClient.invalidateQueries({ queryKey: QUIZ_PROGRESS_KEY });
+    }
+
+    return;
+  }
+
+  // ✅ 2. 퀴즈 완료 시: word_logs + quiz_logs 저장
+  const wordLogs = scoreBoard.map((s) => ({
     user_id: userId,
-    word_id: item.wordId,
+    word_id: s.wordId,
     quiz_type: type,
-    is_correct: item.isCorrect,
+    is_correct: s.isCorrect,
     attempted_at: now,
   }));
 
-  const wordLogRes = await supabase.from("word_logs").upsert(wordLogRows, {
+  const wordRes = await supabase.from("word_logs").upsert(wordLogs, {
     onConflict: "user_id,word_id,quiz_type",
   });
 
-  if (wordLogRes.error) {
-    console.error("❌ word_logs 저장 실패:", wordLogRes.error.message);
+  if (wordRes.error) {
+    console.error("❌ word_logs 저장 실패:", wordRes.error.message);
   }
 
-  // ✅ 2. quiz_logs (퀴즈 세트 단위 기록)
   const correctCount = scoreBoard.filter((s) => s.isCorrect).length;
 
-  const quizLogRes = await supabase.from("quiz_logs").insert([
+  const quizRes = await supabase.from("quiz_logs").insert([
     {
       user_id: userId,
       level,
@@ -53,31 +91,13 @@ export async function saveQuizData(meta: {
     },
   ]);
 
-  if (quizLogRes.error) {
-    console.error("❌ quiz_logs 저장 실패:", quizLogRes.error.message);
+  if (quizRes.error) {
+    console.error("❌ quiz_logs 저장 실패:", quizRes.error.message);
   }
 
-  // ✅ 3. quiz_progress (유저별 1개만 유지)
-  const quizProgressRes = await supabase.from("quiz_progress").upsert(
-    [
-      {
-        user_id: userId,
-        level,
-        day,
-        type,
-        current_index: currentIndex,
-        total,
-        quiz_order: quizOrder,
-        score_board: scoreBoard,
-        saved_at: now,
-      },
-    ],
-    { onConflict: "user_id" }
-  );
+  // 🧹 완료했으므로 quiz_progress 삭제
+  await supabase.from("quiz_progress").delete().eq("user_id", userId);
+  queryClient.invalidateQueries({ queryKey: QUIZ_PROGRESS_KEY });
 
-  if (quizProgressRes.error) {
-    console.error("❌ quiz_progress 저장 실패:", quizProgressRes.error.message);
-  }
-
-  console.log("✅ 모든 퀴즈 데이터 저장 완료");
+  console.log("✅ 퀴즈 완료 → 결과 저장 + 진행 기록 삭제 완료");
 }

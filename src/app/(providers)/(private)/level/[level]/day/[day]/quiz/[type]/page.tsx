@@ -86,8 +86,9 @@ const QuizPage = () => {
       await saveQuizData({
         ...newQuizMeta,
         scoreBoard: newQuizMeta.scoreBoard.map((score) => ({
-          index: score.order,
-          correct: score.isCorrect,
+          wordId: score.wordId,
+          order: score.order,
+          isCorrect: score.isCorrect,
         })),
       });
       queryClient.invalidateQueries({ queryKey: QUIZ_PROGRESS_KEY });
@@ -260,8 +261,9 @@ const QuizPage = () => {
           await saveQuizData({
             ...meta,
             scoreBoard: meta.scoreBoard.map((s: TScore) => ({
-              index: s.order,
-              correct: s.isCorrect,
+              wordId: s.wordId,
+              order: s.order,
+              isCorrect: s.isCorrect,
             })),
           });
           queryClient.invalidateQueries({ queryKey: QUIZ_PROGRESS_KEY });
