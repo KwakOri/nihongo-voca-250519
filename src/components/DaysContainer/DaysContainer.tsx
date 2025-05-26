@@ -11,7 +11,7 @@ const DaysContainer = () => {
 
   return (
     <div className={"grid grid-cols-2 gap-2"}>
-      {data.map(({ day, count }) => {
+      {data.map(({ day, count, total }) => {
         return (
           <Link href={`${level}/day/${day}`} key={day}>
             <div
@@ -20,7 +20,9 @@ const DaysContainer = () => {
               }
             >
               <p className="text-xl font-bold text-white">DAY {day}</p>
-              <p className="text-white font-semibold">0/ {count}</p>
+              <p className="text-white font-semibold">
+                {count} / {total}
+              </p>
             </div>
           </Link>
         );

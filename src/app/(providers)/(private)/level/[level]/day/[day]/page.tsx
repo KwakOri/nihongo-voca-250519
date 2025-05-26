@@ -10,12 +10,12 @@ import { useParams, useRouter } from "next/navigation";
 
 const DayPage = () => {
   const { level, day } = useParams();
-  const navigate = useRouter();
+  const router = useRouter();
 
   const { data, isPending } = useGetWordsByDay({ day: Number(day) });
 
   const onGoBackButtonClick = () => {
-    navigate.back();
+    router.back();
   };
 
   if (!data || isPending)
@@ -49,7 +49,12 @@ const DayPage = () => {
 
       <div className={"flex flex-col gap-2"}>
         {data.map((word: DBWordWithQuiz) => {
-          const allTypes = [1, 2, 3];
+          const allTypes = [1, 2, 3, 4];
+          const clearNumbers = word.word_logs
+            .filter((log) => log.is_correct === true)
+            .map((log) => log.quiz_type);
+          if (clearNumbers.length > 0) console.log(clearNumbers);
+
           const typeNumbers = word.quiz.map((item) => Number(item.type));
           return (
             <div
@@ -63,10 +68,20 @@ const DayPage = () => {
                       className={`flex flex-col items-center`}
                       key={`${word.id}-${type}`}
                     >
-                      <p>{type === 1 ? "あ" : type === 2 ? "漢" : "한"}</p>
+                      <p>
+                        {type === 1
+                          ? "あ"
+                          : type === 2
+                          ? "漢"
+                          : type === 3
+                          ? "한"
+                          : "절"}
+                      </p>
                       <div
                         className={`rounded-full h-4 w-4 ${
-                          typeNumbers.includes(type)
+                          clearNumbers.includes(type)
+                            ? "bg-[#58b1ff]"
+                            : typeNumbers.includes(type)
                             ? "bg-white"
                             : "bg-[#444444]"
                         }`}

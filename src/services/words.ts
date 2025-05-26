@@ -9,30 +9,62 @@ interface GetWordsWithQuizByDayProps {
 }
 
 export const getWordsCountByAllDays = async () => {
-  const { data, error } = await supabase.from("words").select(`day`);
+  const session = await supabase.auth.getSession();
+  const userId = session.data.session?.user?.id;
+  if (!userId) throw new Error("로그인이 필요합니다.");
+
+  const { data, error } = await supabase
+    .from("words")
+    .select("id, day, word_logs(user_id, is_correct)")
+    .order("day", { ascending: true });
+
   if (error) {
     throw new Error(error.message);
   }
-  // 개수를 집계
-  const countByDay = data.reduce((acc: Record<number, number>, { day }) => {
-    acc[day] = (acc[day] || 0) + 1;
-    return acc;
-  }, {});
 
-  // 객체 형태를 배열 형태로 변환 및 정렬
+  // ✅ 집계 객체: { [day]: { count, total } }
+  const countByDay: Record<number, { count: number; total: number }> = {};
+
+  for (const word of data) {
+    const day = word.day;
+    countByDay[day] = countByDay[day] || { count: 0, total: 0 };
+
+    countByDay[day].total += 1;
+
+    const hasCorrect = word.word_logs?.some(
+      (log) => log.user_id === userId && log.is_correct
+    );
+
+    if (hasCorrect) {
+      countByDay[day].count += 1;
+    }
+  }
+
+  // ✅ 객체 → 정렬된 배열
   return Object.entries(countByDay)
-    .map(([day, count]) => ({ day: Number(day), count }))
+    .map(([day, { count, total }]) => ({
+      day: Number(day),
+      count,
+      total,
+    }))
     .sort((a, b) => a.day - b.day);
 };
 
 export const getWordsOfDay = async ({ day }: GetWordsOfDayProps) => {
+  const sessionRes = await supabase.auth.getSession();
+  const userId = sessionRes.data.session?.user?.id;
+  if (!userId) throw new Error("로그인이 필요합니다.");
+
   const { data, error } = await supabase
     .from("words")
-    .select("*, quiz(type)")
-    .eq("day", day);
+    .select("*, quiz(type), word_logs(*)")
+    .eq("day", day)
+    .eq("word_logs.user_id", userId); // 유저 본인 기록만
+
   if (error) {
     throw new Error(error.message);
   }
+
   return data;
 };
 
