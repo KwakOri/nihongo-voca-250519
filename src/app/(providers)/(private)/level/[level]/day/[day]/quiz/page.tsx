@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const QuizTypePage = () => {
@@ -11,17 +10,19 @@ const QuizTypePage = () => {
     3: "뜻",
     4: "문장",
   };
-  const navigate = useRouter();
+  const router = useRouter();
   const onGoBackButtonClick = () => {
-    navigate.back();
+    router.back();
   };
-  const onQuizTypeClick = () => {
+  const onQuizTypeClick = (type: number) => {
+    if (type !== 3) return alert("현재 지원되지 않는 기능입니다.");
     localStorage.removeItem("quiz");
     localStorage.removeItem("quiz-meta");
+    router.push(`./${type}`);
   };
   return (
     <div className="h-full flex flex-col">
-      <div className="sticky z-10 top-0 w-full h-12 grid grid-cols-3 gap-2 bg-black pb-2">
+      <div className="sticky z-10 top-0 w-full h-12 grid grid-cols-3 gap-2 bg-black pb-2 shrink-0">
         <button
           className={
             "rounded bg-[#2d2d2d] w-full h-full flex justify-center items-center text-white text-xs hover:brightness-125"
@@ -39,16 +40,15 @@ const QuizTypePage = () => {
       </div>
       <div className="flex flex-col h-full gap-2">
         {types.map((type) => (
-          <Link
-            className="grow"
+          <button
+            onClick={() => onQuizTypeClick(type)}
             key={type}
-            onClick={onQuizTypeClick}
-            href={`quiz/${type}`}
+            className={`grow w-full h-full flex justify-center items-center rounded ${
+              type === 3 ? "bg-[#2d2d2d]" : "bg-[#111111]"
+            }`}
           >
-            <p className="w-full h-full flex justify-center items-center rounded bg-[#2d2d2d]">
-              {(titles as Record<number, string>)[type]}
-            </p>
-          </Link>
+            {(titles as Record<number, string>)[type]}
+          </button>
         ))}
       </div>
     </div>
