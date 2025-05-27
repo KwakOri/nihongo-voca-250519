@@ -2,10 +2,10 @@ import { useParams, useRouter } from "next/navigation";
 
 const LevelNavBar = () => {
   const { level } = useParams();
-  const navigate = useRouter();
+  const router = useRouter();
 
   const onGoBackButtonClick = () => {
-    navigate.back();
+    router.push(`/level`);
   };
 
   return (
