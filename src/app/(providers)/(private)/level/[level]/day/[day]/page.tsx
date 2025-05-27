@@ -15,7 +15,7 @@ const DayPage = () => {
   const { data, isPending } = useGetWordsByDay({ day: Number(day) });
 
   const onGoBackButtonClick = () => {
-    router.back();
+    router.push(`/level/${level}`);
   };
 
   if (!data || isPending)

@@ -40,7 +40,7 @@ export default function Home() {
 
   return (
     <div className="w-full h-full flex flex-col gap-4 justify-center items-center">
-      <h1 className="text-white text-xl">NIHONGO VOCA</h1>
+      <h1 className="text-white text-4xl font-black">EASY JLPT</h1>
 
       <Link
         href="level"
@@ -56,8 +56,32 @@ export default function Home() {
               href={`/level/${savedQuiz.level}/day/${savedQuiz.day}/quiz/${savedQuiz.type}`}
               className="bg-[#2d2d2d] w-full h-20 rounded flex justify-center items-center text-white"
             >
-              level:{savedQuiz.level}, day:{savedQuiz.day}, type:
-              {savedQuiz.type}
+              <div className="flex w-full h-full py-2 justify-around">
+                <div className="flex items-center w-full h-full gap-2 justify-center">
+                  <p>N</p>
+                  <p className="h-full text-3xl aspect-square rounded-lg bg-[#1d1d1d] flex justify-center items-center shrink-0">
+                    {savedQuiz.level}
+                  </p>
+                </div>
+                <div className="flex items-center w-full h-full gap-2 justify-center">
+                  <p>DAY</p>
+                  <p className="h-full text-3xl aspect-square rounded-lg bg-[#1d1d1d] flex justify-center items-center shrink-0">
+                    {savedQuiz.day}
+                  </p>
+                </div>
+                <div className="flex items-center w-full h-full gap-2 justify-center">
+                  <p>유형</p>
+                  <p className="h-full text-3xl aspect-square rounded-lg bg-[#1d1d1d] flex justify-center items-center shrink-0">
+                    {savedQuiz.type === 1
+                      ? "あ"
+                      : savedQuiz.type === 2
+                      ? "漢"
+                      : savedQuiz.type === 3
+                      ? "한"
+                      : "절"}
+                  </p>
+                </div>
+              </div>
             </Link>
           ) : (
             <p>진행중인 퀴즈가 없습니다.</p>
@@ -66,7 +90,7 @@ export default function Home() {
       </div>
       <button
         onClick={handleLogout}
-        className="px-4 py-2 bg-red-600 text-white rounded"
+        className="px-4 py-2 bg-[#2d2d2d] text-white rounded"
       >
         로그아웃
       </button>

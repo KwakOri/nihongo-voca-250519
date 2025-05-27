@@ -2,8 +2,7 @@
 
 import QuizCard from "@/components/QuizCard/QuizCard";
 import QuizNavBar from "@/components/QuizNavBar/QuizNavBar";
-import { QUIZ_PROGRESS_KEY } from "@/queries/quiz";
-import { useGetWordsWithQuizByDay } from "@/queries/words";
+import { QUIZ_PROGRESS_KEY, useQuizzesByType } from "@/queries/quiz";
 import { saveQuizData } from "@/services/quiz";
 import { DBWordWithQuiz } from "@/types/words";
 import { useQueryClient } from "@tanstack/react-query";
@@ -44,9 +43,12 @@ const QuizPage = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { level, day, type } = useParams();
-  const { data, isPending } = useGetWordsWithQuizByDay({
+  const { data, isPending } = useQuizzesByType({
     day: Number(day),
+    type: String(type),
   });
+
+  console.log(data);
 
   const [isQuizStarted, setIsQuizStarted] = useState(false);
   const [quizMeta, setQuizMeta] = useState<TQuizMeta>({
@@ -96,9 +98,10 @@ const QuizPage = () => {
       return;
     }
 
-    const newQuiz = generateNewQuiz(
-      data?.[newQuizMeta.quizOrder[newQuizMeta.currentIndex]]
-    );
+    const currentWord = data?.[newQuizMeta.quizOrder[newQuizMeta.currentIndex]];
+    if (!currentWord) return;
+
+    const newQuiz = generateNewQuiz(currentWord);
     setQuizInLocalStorage(newQuiz);
     setQuiz(newQuiz);
   };
@@ -157,6 +160,7 @@ const QuizPage = () => {
       default:
         quiz = "";
     }
+
     const selectBase = word.quiz
       .filter((item) => item.type === type)[0]
       .selects.split(",")
@@ -207,14 +211,12 @@ const QuizPage = () => {
     try {
       const raw = localStorage.getItem("quiz-meta");
       if (!raw) return;
-
       const meta = JSON.parse(raw);
-      console.log("meta => ", meta);
       await saveQuizData(meta);
-      router.push(`/level/${level}`);
+      router.push(`/level/${level}/day/${day}`);
     } catch (error) {
       console.error("뒤로가기 중 저장 실패:", error);
-      router.push(`/level/${level}`); // 실패해도 이동은 강제
+      router.push(`/level/${level}/day/${day}`);
     }
   };
 
@@ -227,17 +229,19 @@ const QuizPage = () => {
       const savedQuiz = getQuizInLocalStorage();
       if (!savedQuizMeta) {
         const newQuizMeta = generateNewQuizMeta();
-        const newQuizBase: DBWordWithQuiz =
+        const currentWord =
           data?.[newQuizMeta.quizOrder[newQuizMeta.currentIndex]];
-        const newQuiz = generateNewQuiz(newQuizBase);
+        if (!currentWord) return;
+        const newQuiz = generateNewQuiz(currentWord);
         setQuizMetaInLocalStorage(newQuizMeta);
         setQuizMeta(newQuizMeta);
         setQuizInLocalStorage(newQuiz);
         setQuiz(newQuiz);
       } else if (!savedQuiz) {
-        const newQuizBase: DBWordWithQuiz =
+        const currentWord =
           data?.[savedQuizMeta.quizOrder[savedQuizMeta.currentIndex]];
-        const newQuiz = generateNewQuiz(newQuizBase);
+        if (!currentWord) return;
+        const newQuiz = generateNewQuiz(currentWord);
         setQuizInLocalStorage(newQuiz);
         setQuiz(newQuiz);
       } else {
