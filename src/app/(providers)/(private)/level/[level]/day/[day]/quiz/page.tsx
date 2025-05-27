@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 
-export const typeTitles = {
+const typeTitles = {
   1: "발음",
   2: "한자",
   3: "뜻",
