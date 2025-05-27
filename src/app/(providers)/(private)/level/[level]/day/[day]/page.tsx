@@ -1,6 +1,7 @@
 "use client";
 
 import JPParagraph from "@/components/JPParagraph";
+import Loading from "@/components/Loading";
 // import RubySentence from "@/components/RubySentence/RubySentence";
 import { useGetWordsByDay } from "@/queries/words";
 import { DBWordWithQuiz } from "@/types/words";
@@ -18,12 +19,7 @@ const DayPage = () => {
     router.push(`/level/${level}`);
   };
 
-  if (!data || isPending)
-    return (
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
+  if (!data || isPending) return <Loading />;
 
   return (
     <div className="w-full h-full overflow-scroll">

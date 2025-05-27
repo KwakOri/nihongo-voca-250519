@@ -1,5 +1,6 @@
 "use client";
 
+import Loading from "@/components/Loading";
 import QuizCard from "@/components/QuizCard/QuizCard";
 import QuizNavBar from "@/components/QuizNavBar/QuizNavBar";
 import { QUIZ_PROGRESS_KEY, useQuizzesByType } from "@/queries/quiz";
@@ -281,7 +282,7 @@ const QuizPage = () => {
     return () => window.removeEventListener("beforeunload", handleUnload);
   }, []);
 
-  if (!isQuizStarted || isPending) return <div>Loading...</div>;
+  if (!isQuizStarted || isPending) return <Loading />;
 
   return (
     <div className="w-hull h-full flex flex-col">

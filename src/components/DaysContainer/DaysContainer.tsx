@@ -1,3 +1,4 @@
+import Loading from "@/components/Loading";
 import { useGetWordsCountByDay } from "@/queries/words";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -7,7 +8,7 @@ const DaysContainer = () => {
 
   const { data, isPending } = useGetWordsCountByDay();
 
-  if (!data || isPending) return <div>Loading...</div>;
+  if (!data || isPending) return <Loading />;
 
   return (
     <div className={"grid grid-cols-2 gap-2"}>
