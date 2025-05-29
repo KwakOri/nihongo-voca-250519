@@ -49,8 +49,6 @@ const QuizPage = () => {
     type: String(type),
   });
 
-  console.log(data);
-
   const [isQuizStarted, setIsQuizStarted] = useState(false);
   const [quizMeta, setQuizMeta] = useState<TQuizMeta>({
     total: 0,
@@ -69,6 +67,67 @@ const QuizPage = () => {
     quizOrder: 0,
     selects: [],
   });
+
+  function generateQuizChoicesWithTail(
+    answer: string,
+    selectsRaw: string,
+    part: string,
+    word: string
+  ): string[] {
+    console.log(part);
+    const parts = selectsRaw.split("/").map((part) => part.trim());
+
+    // 유효한 자리만 추출
+    const validIndexes = parts
+      .map((part, index) => {
+        const options = part
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        return options.length > 1 ? index : null;
+      })
+      .filter((i): i is number => i !== null);
+
+    if (validIndexes.length === 0) {
+      throw new Error("출제할 수 있는 자리가 없습니다.");
+    }
+
+    // 바꿀 자릿수 무작위 선택
+    const targetIndex =
+      validIndexes[Math.floor(Math.random() * validIndexes.length)];
+    const targetOptions = parts[targetIndex].split(",").map((s) => s.trim());
+    const distractors = targetOptions.slice(1, 4); // 최대 3개 오답
+
+    // 정답 분리
+    const chars = Array.from(word);
+
+    // 어미 분리 여부 판단
+    const shouldPreserveTail =
+      part === "동사" || part === "형용사" || part === "형용동사";
+
+    let tail = "";
+    let baseChars = chars;
+
+    if (shouldPreserveTail) {
+      const kanjiRegex = /[\u4E00-\u9FFF]/;
+      const splitIndex = chars.findIndex((c) => !kanjiRegex.test(c));
+      if (splitIndex > -1) {
+        baseChars = chars.slice(0, splitIndex);
+        tail = chars.slice(splitIndex).join("");
+      }
+    }
+    console.log("baseChars => ", baseChars);
+    console.log("tail => ", tail);
+
+    // 오답 선택지 생성
+    const choices = distractors.map((distractor) => {
+      const newChars = [...baseChars];
+      newChars[targetIndex] = distractor;
+      return newChars.join("") + tail;
+    });
+
+    return [answer, ...choices];
+  }
 
   const nextQuiz = async (isCorrect: boolean) => {
     const newScoreBoard = [...quizMeta.scoreBoard];
@@ -135,6 +194,8 @@ const QuizPage = () => {
   const generateNewQuiz = (word: DBWordWithQuiz) => {
     let answer;
     let quiz;
+    let selectBase;
+    let selects;
     switch (type) {
       case "1":
         answer = word.pronunciation;
@@ -162,20 +223,39 @@ const QuizPage = () => {
         quiz = "";
     }
 
-    const selectBase = word.quiz
-      .filter((item) => item.type === type)[0]
-      .selects.split(",")
-      .map((item, index) => ({
-        id: index + 1,
-        surface: item,
-        isCorrect: false,
-      }));
+    switch (type) {
+      case "2":
+        selectBase = generateQuizChoicesWithTail(
+          answer,
+          word.quiz.filter((item) => item.type === type)[0].selects,
+          word.part,
+          word.word
+        ).map((item, index) => ({
+          id: index + 1,
+          surface: item,
+          isCorrect: false,
+        }));
+        selects = shuffleArray(selectBase || [])
+          .filter((item) => item.surface !== answer)
+          .slice(0, 3);
+        selects.push({ id: 0, surface: word.word, isCorrect: true });
+        break;
+      default:
+        selectBase = word.quiz
+          .filter((item) => item.type === type)[0]
+          .selects.split(",")
+          .map((item, index) => ({
+            id: index + 1,
+            surface: item,
+            isCorrect: false,
+          }));
+        selects = shuffleArray(selectBase || [])
+          .filter((item) => item.surface !== answer)
+          .slice(0, 3);
+        selects.push({ id: 0, surface: answer, isCorrect: true });
+    }
 
-    const selects = shuffleArray(selectBase)
-      .filter((item) => item.surface !== answer)
-      .slice(0, 3);
-    selects.push({ id: 0, surface: answer, isCorrect: true });
-    const shuffledSelects = shuffleArray(selects);
+    const shuffledSelects = shuffleArray(selects || []);
 
     const newQuiz: TQuiz = {
       wordId: word.id,
