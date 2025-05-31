@@ -9,6 +9,7 @@ export const QUIZ_PROGRESS_KEY = ["quiz-progress"];
 interface TUseQuizzesByType {
   day: number;
   type: string;
+  level: number;
 }
 
 export const useQuizProgress = () => {
@@ -52,10 +53,10 @@ export const useQuizProgress = () => {
   return query;
 };
 
-export const useQuizzesByType = ({ day, type }: TUseQuizzesByType) => {
+export const useQuizzesByType = ({ day, type, level }: TUseQuizzesByType) => {
   return useQuery({
-    queryKey: ["quiz", "day", day, "type", type],
-    queryFn: () => getWordsWithQuizByDay({ day }),
+    queryKey: ["quiz", "level", level, "day", day, "type", type],
+    queryFn: () => getWordsWithQuizByDay({ day, level }),
     select: (data) => {
       return data
         .map((d: DBWordWithQuiz) => ({

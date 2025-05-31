@@ -2,13 +2,15 @@ import { supabase } from "@/db/supabase";
 
 interface GetWordsOfDayProps {
   day: number;
+  level: number;
 }
 
 interface GetWordsWithQuizByDayProps {
   day: number;
+  level: number;
 }
 
-export const getWordsCountByAllDays = async () => {
+export const getWordsCountByAllDays = async (level: number) => {
   const session = await supabase.auth.getSession();
   const userId = session.data.session?.user?.id;
   if (!userId) throw new Error("로그인이 필요합니다.");
@@ -16,7 +18,8 @@ export const getWordsCountByAllDays = async () => {
   const { data, error } = await supabase
     .from("words")
     .select("id, day, word_logs(user_id, is_correct)")
-    .order("day", { ascending: true });
+    .order("day", { ascending: true })
+    .eq("level", level);
 
   if (error) {
     throw new Error(error.message);
@@ -50,7 +53,7 @@ export const getWordsCountByAllDays = async () => {
     .sort((a, b) => a.day - b.day);
 };
 
-export const getWordsOfDay = async ({ day }: GetWordsOfDayProps) => {
+export const getWordsOfDay = async ({ day, level }: GetWordsOfDayProps) => {
   const sessionRes = await supabase.auth.getSession();
   const userId = sessionRes.data.session?.user?.id;
   if (!userId) throw new Error("로그인이 필요합니다.");
@@ -59,6 +62,7 @@ export const getWordsOfDay = async ({ day }: GetWordsOfDayProps) => {
     .from("words")
     .select("*, quiz(type), word_logs(*)")
     .eq("day", day)
+    .eq("level", level)
     .eq("word_logs.user_id", userId); // 유저 본인 기록만
 
   if (error) {
@@ -81,6 +85,7 @@ export const getWords = async () => {
 
 export const getWordsWithQuizByDay = async ({
   day,
+  level,
 }: GetWordsWithQuizByDayProps) => {
   const { data, error } = await supabase
     .from("words")
@@ -90,7 +95,8 @@ export const getWordsWithQuizByDay = async ({
       quiz(*)
     `
     )
-    .eq("day", day);
+    .eq("day", day)
+    .eq("level", level);
 
   if (error) {
     throw new Error(error.message);

@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 const DaysContainer = () => {
   const { level } = useParams();
 
-  const { data, isPending } = useGetWordsCountByDay();
+  const { data, isPending } = useGetWordsCountByDay(Number(level));
 
   if (!data || isPending) return <Loading />;
 

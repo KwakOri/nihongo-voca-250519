@@ -13,7 +13,10 @@ const DayPage = () => {
   const { level, day } = useParams();
   const router = useRouter();
 
-  const { data, isPending } = useGetWordsByDay({ day: Number(day) });
+  const { data, isPending } = useGetWordsByDay({
+    day: Number(day),
+    level: Number(level),
+  });
 
   const onGoBackButtonClick = () => {
     router.push(`/level/${level}`);

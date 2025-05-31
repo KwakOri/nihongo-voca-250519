@@ -47,6 +47,7 @@ const QuizPage = () => {
   const { data, isPending } = useQuizzesByType({
     day: Number(day),
     type: String(type),
+    level: Number(level),
   });
 
   const [isQuizStarted, setIsQuizStarted] = useState(false);
