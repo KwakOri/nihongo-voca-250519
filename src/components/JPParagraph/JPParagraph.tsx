@@ -12,12 +12,12 @@ const JPParagraph = ({ tokens, meaning }: JPParagraphProps) => {
 
   return (
     <div className="text-white space-y-1 flex flex-col items-center">
-      <span className="text-xl font-semibold">
+      <span className="text-3xl font-semibold">
         {elements.map((element, index) =>
           element.furigana ? (
             <ruby key={index}>
               {element.kanji}
-              <rt className="text-white mb-1 text-center">
+              <rt className="text-white text-xl mb-1 text-center">
                 {element.furigana}
               </rt>
             </ruby>
@@ -26,7 +26,7 @@ const JPParagraph = ({ tokens, meaning }: JPParagraphProps) => {
           )
         )}
       </span>
-      <p className="text-sm text-gray-300">{meaning}</p>
+      <p className="text-xl text-gray-300">{meaning}</p>
     </div>
   );
 };
