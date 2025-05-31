@@ -8,10 +8,14 @@ import { DBWordWithQuiz } from "@/types/words";
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 
 const DayPage = () => {
   const { level, day } = useParams();
   const router = useRouter();
+
+  const [isMeaningVisible, setIsMeaningVisible] = useState(true);
+  const [isPronunciationVisible, setIsPronunciationVisible] = useState(true);
 
   const { data, isPending } = useGetWordsByDay({
     day: Number(day),
@@ -89,7 +93,12 @@ const DayPage = () => {
                   );
                 })}
               </div>
-              <JPParagraph tokens={word.tokens} meaning={word.meaning} />
+              <JPParagraph
+                tokens={word.tokens}
+                meaning={word.meaning}
+                isMeaningVisible={isMeaningVisible}
+                isPronunciationVisible={isPronunciationVisible}
+              />
               {/* <div>
                 <RubySentence tokens={sentence?.tokens} />
                 <p className={"text-white"}>{sentence?.kr}</p>
@@ -97,6 +106,28 @@ const DayPage = () => {
             </div>
           );
         })}
+      </div>
+      <div className="absolute px-4 py-2 bottom-0 left-0 w-full h-12 grid grid-cols-2 gap-2 bg-black pb-2">
+        <button
+          className={`bg-[#2d2d2d] rounded ${
+            isMeaningVisible ? "opacity-100" : "opacity-50"
+          }`}
+          onClick={() => {
+            setIsMeaningVisible((prev) => !prev);
+          }}
+        >
+          뜻
+        </button>
+        <button
+          className={`bg-[#2d2d2d] ${
+            isPronunciationVisible ? "opacity-100" : "opacity-50"
+          }`}
+          onClick={() => {
+            setIsPronunciationVisible((prev) => !prev);
+          }}
+        >
+          후리가나
+        </button>
       </div>
     </div>
   );

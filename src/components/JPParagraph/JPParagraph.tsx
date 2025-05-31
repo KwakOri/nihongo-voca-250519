@@ -1,9 +1,16 @@
 interface JPParagraphProps {
   tokens: string;
   meaning: string;
+  isMeaningVisible: boolean;
+  isPronunciationVisible: boolean;
 }
 
-const JPParagraph = ({ tokens, meaning }: JPParagraphProps) => {
+const JPParagraph = ({
+  tokens,
+  meaning,
+  isMeaningVisible,
+  isPronunciationVisible,
+}: JPParagraphProps) => {
   // tokens 파싱하기
   const elements = tokens.split("/").map((pair) => {
     const [surface, furigana] = pair.split(":");
@@ -17,16 +24,22 @@ const JPParagraph = ({ tokens, meaning }: JPParagraphProps) => {
           element.furigana ? (
             <ruby key={index}>
               {element.kanji}
-              <rt className="text-white text-xl mb-1 text-center">
-                {element.furigana}
-              </rt>
+              {
+                <rt className={`${!isPronunciationVisible && " opacity-0"}`}>
+                  {element.furigana}
+                </rt>
+              }
             </ruby>
           ) : (
             <span key={index}>{element.kanji}</span>
           )
         )}
       </span>
-      <p className="text-xl text-gray-300">{meaning}</p>
+      <p
+        className={`text-xl text-gray-300 ${!isMeaningVisible && " opacity-0"}`}
+      >
+        {meaning}
+      </p>
     </div>
   );
 };
