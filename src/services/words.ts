@@ -35,7 +35,7 @@ export const getWordsCountByAllDays = async (level: number) => {
     countByDay[day].total += 1;
 
     const hasCorrect = word.word_memory_logs?.some(
-      (log) => log.user_id === userId && log.is_check
+      (log) => log.user_id === userId && log.is_checked
     );
 
     if (hasCorrect) {

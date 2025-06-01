@@ -15,6 +15,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "EASY JLPT",
   description: "EASY JLPT",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icons/icon-192x192.png",
+    apple: "/icons/icon-192x192.png",
+  },
+  themeColor: "#2d2d2d",
 };
 
 export default function RootLayout({
