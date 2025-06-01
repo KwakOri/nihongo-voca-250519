@@ -12,6 +12,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  themeColor: "#2d2d2d", // ✅ 여기에 지정해야 경고가 사라짐
+};
+
 export const metadata: Metadata = {
   title: "EASY JLPT",
   description: "EASY JLPT",
@@ -20,7 +24,6 @@ export const metadata: Metadata = {
     icon: "/icons/icon-192x192.png",
     apple: "/icons/icon-192x192.png",
   },
-  themeColor: "#2d2d2d",
 };
 
 export default function RootLayout({
