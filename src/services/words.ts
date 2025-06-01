@@ -17,7 +17,7 @@ export const getWordsCountByAllDays = async (level: number) => {
 
   const { data, error } = await supabase
     .from("words")
-    .select("id, day, word_logs(user_id, is_correct)")
+    .select("id, day, word_memory_logs(*)")
     .order("day", { ascending: true })
     .eq("level", level);
 
@@ -34,8 +34,8 @@ export const getWordsCountByAllDays = async (level: number) => {
 
     countByDay[day].total += 1;
 
-    const hasCorrect = word.word_logs?.some(
-      (log) => log.user_id === userId && log.is_correct
+    const hasCorrect = word.word_memory_logs?.some(
+      (log) => log.user_id === userId && log.is_check
     );
 
     if (hasCorrect) {
@@ -60,10 +60,11 @@ export const getWordsOfDay = async ({ day, level }: GetWordsOfDayProps) => {
 
   const { data, error } = await supabase
     .from("words")
-    .select("*, quiz(type), word_logs(*)")
+    .select("*, quiz(type), word_logs(*), word_memory_logs(*)")
     .eq("day", day)
     .eq("level", level)
-    .eq("word_logs.user_id", userId); // 유저 본인 기록만
+    .eq("word_logs.user_id", userId) // 유저 본인 기록만
+    .eq("word_memory_logs.user_id", userId); // 유저 본인 기록만
 
   if (error) {
     throw new Error(error.message);
@@ -103,4 +104,45 @@ export const getWordsWithQuizByDay = async ({
   }
 
   return data;
+};
+
+export const syncMemoryLogs = async (
+  userId: string,
+  originMemoryLogs: number[],
+  newMemoryLogs: number[]
+) => {
+  const deletedIds = originMemoryLogs.filter(
+    (id) => !newMemoryLogs.includes(id)
+  );
+  const addedIds = newMemoryLogs.filter((id) => !originMemoryLogs.includes(id));
+
+  // 삭제 요청
+  if (deletedIds.length > 0) {
+    const { error: deleteError } = await supabase
+      .from("word_memory_logs")
+      .delete()
+      .in("word_id", deletedIds)
+      .eq("user_id", userId);
+
+    if (deleteError) {
+      console.error("삭제 실패:", deleteError);
+    }
+  }
+
+  // 추가 요청
+  if (addedIds.length > 0) {
+    const inserts = addedIds.map((word_id) => ({
+      user_id: userId,
+      word_id,
+      is_checked: true,
+    }));
+
+    const { error: insertError } = await supabase
+      .from("word_memory_logs")
+      .insert(inserts);
+
+    if (insertError) {
+      console.error("추가 실패:", insertError);
+    }
+  }
 };

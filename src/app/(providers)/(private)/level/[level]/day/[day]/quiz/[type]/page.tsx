@@ -117,8 +117,6 @@ const QuizPage = () => {
         tail = chars.slice(splitIndex).join("");
       }
     }
-    console.log("baseChars => ", baseChars);
-    console.log("tail => ", tail);
 
     // 오답 선택지 생성
     const choices = distractors.map((distractor) => {

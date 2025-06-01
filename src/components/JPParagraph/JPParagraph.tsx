@@ -1,4 +1,5 @@
 interface JPParagraphProps {
+  isDone: boolean;
   tokens: string;
   meaning: string;
   isMeaningVisible: boolean;
@@ -18,7 +19,7 @@ const JPParagraph = ({
   });
 
   return (
-    <div className="text-white space-y-1 flex flex-col items-center">
+    <div className={`text-white space-y-1 flex flex-col items-center`}>
       <span className="text-3xl font-semibold">
         {elements.map((element, index) =>
           element.furigana ? (

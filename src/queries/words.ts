@@ -24,7 +24,7 @@ export const useGetWordsCountByDay = (level: number) => {
 
 export const useGetWordsByDay = ({ day, level }: UseGetWordsByDayProps) => {
   return useQuery({
-    queryKey: ["words", , "level", level, "day", day],
+    queryKey: ["words", "level", level, "day", day],
     queryFn: () => getWordsOfDay({ day, level }),
   });
 };
