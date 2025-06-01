@@ -33,7 +33,6 @@ const DayPage = () => {
     setNewMemoryLogs,
     toggleNewMemoryLog,
     syncAndPush,
-    syncAndBack,
   } = useMemorySyncBeforeNavigation({
     userId: userId as string,
     level: level as string,
