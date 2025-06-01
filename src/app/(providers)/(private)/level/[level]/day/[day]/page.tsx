@@ -219,9 +219,9 @@ const DayPage = () => {
             );
           })}
       </div>
-      <div className="absolute px-4 py-2 bottom-0 left-0 w-full h-16 grid grid-cols-3 gap-2 bg-black pb-2">
+      <div className="absolute px-4 pt-2 pb-6 bottom-0 left-0 w-full h-20 grid grid-cols-3 gap-2 bg-black ">
         <button
-          className={`bg-[#2d2d2d] rounded ${
+          className={`bg-[#2d2d2d] rounded-lg ${
             isMeaningVisible ? "opacity-100" : "opacity-50"
           }`}
           onClick={() => {
@@ -231,7 +231,7 @@ const DayPage = () => {
           {isMeaningVisible ? "뜻 끄기" : "뜻 켜기"}
         </button>
         <button
-          className={`bg-[#2d2d2d] ${
+          className={`rounded-lg bg-[#2d2d2d] ${
             isPronunciationVisible ? "opacity-100" : "opacity-50"
           }`}
           onClick={() => {
@@ -241,7 +241,7 @@ const DayPage = () => {
           {isPronunciationVisible ? "후리 끄기" : "후리 켜기"}
         </button>
         <button
-          className={`bg-[#2d2d2d] ${
+          className={`rounded-lg bg-[#2d2d2d] ${
             isDoneVisible ? "opacity-100" : "opacity-50"
           }`}
           onClick={() => {
