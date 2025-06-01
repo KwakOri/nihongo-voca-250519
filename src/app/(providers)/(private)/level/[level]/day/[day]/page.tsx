@@ -219,7 +219,7 @@ const DayPage = () => {
             );
           })}
       </div>
-      <div className="absolute px-4 pt-2 pb-6 bottom-0 left-0 w-full h-20 grid grid-cols-3 gap-2 bg-black ">
+      <div className="absolute px-4 pt-2 pb-6 bottom-0 left-0 w-full h-20 grid grid-cols-3 gap-2 bg-black z-20">
         <button
           className={`bg-[#2d2d2d] rounded-lg ${
             isMeaningVisible ? "opacity-100" : "opacity-50"
