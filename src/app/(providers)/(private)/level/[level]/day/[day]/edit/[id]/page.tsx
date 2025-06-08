@@ -1,6 +1,7 @@
 "use client";
 
 import LabeledInput from "@/components/LabeledInput";
+import Loading from "@/components/Loading";
 import { supabase } from "@/db/supabase";
 import { getWordById } from "@/services/words";
 import { DBWord } from "@/types/words";
@@ -61,7 +62,7 @@ export default function WordEditPage() {
     updateMutation.mutate(wordData);
   };
 
-  if (isLoading || !wordData) return <div>Loading...</div>;
+  if (isLoading || !wordData) return <Loading />;
 
   return (
     <div className="w-full h-full overflow-scroll">
