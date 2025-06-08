@@ -48,6 +48,12 @@ export default function Home() {
       >
         공부하러 가기
       </Link>
+      <Link
+        href="/word/add"
+        className="bg-[#2d2d2d] w-full h-20 rounded flex justify-center items-center text-white"
+      >
+        단어 추가
+      </Link>
       <div className="w-full">
         <p>진행중인 퀴즈</p>
         <div className="w-full h-20">

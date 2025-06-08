@@ -1,5 +1,6 @@
 "use client";
 
+import OptionButton from "@/app/(providers)/(private)/level/[level]/day/[day]/_components/OptionsButton";
 import { useMemorySyncBeforeNavigation } from "@/app/(providers)/(private)/level/[level]/day/[day]/_hooks/useMemorySyncBeforeNavigation";
 import JPParagraph from "@/components/JPParagraph";
 import Loading from "@/components/Loading";
@@ -14,7 +15,7 @@ import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
 const DayPage = () => {
-  const { userId } = useAuth();
+  const { userId, profile } = useAuth();
   const { level, day } = useParams();
 
   const [isMeaningVisible, setIsMeaningVisible] = useState(true);
@@ -111,7 +112,7 @@ const DayPage = () => {
 
   return (
     <div className="w-full h-full overflow-scroll">
-      <div className="sticky z-10 top-0 w-full h-12 grid grid-cols-3 gap-2 bg-black pb-2 z-20">
+      <div className="sticky top-0 w-full h-12 grid grid-cols-3 gap-2 bg-black pb-2 z-20">
         <button
           className={
             "rounded bg-[#2d2d2d] w-full h-full flex justify-center items-center text-white text-xs hover:brightness-125"
@@ -131,7 +132,7 @@ const DayPage = () => {
         </Link>
       </div>
 
-      <div className={"flex flex-col gap-2"}>
+      <div className={"flex flex-col gap-2 pb-20"}>
         {data
           .filter((word) => {
             if (isDoneVisible) {
@@ -153,20 +154,23 @@ const DayPage = () => {
                 className={`rounded-xl w-full h-full aspect-square relative`}
                 key={word.id}
               >
-                <button
-                  onClick={() => toggleNewMemoryLog(word.id)}
-                  className="absolute left-2 top-2 p-2 z-10"
-                >
-                  <div
-                    className={`rounded-lg w-6 aspect-square flex justify-center items-center ${
-                      checkIsIncludedInMemory(word.id)
-                        ? "bg-[#e9e9e9]"
-                        : "bg-[#a5a5a5]"
-                    }`}
+                <div className="absolute left-2 top-2 p-2 z-10 flex flex-col gap-2">
+                  <button
+                    onClick={() => toggleNewMemoryLog(word.id)}
+                    className="p-2 z-10"
                   >
-                    <FaCheck color={"#2d2d2d"} />
-                  </div>
-                </button>
+                    <div
+                      className={`rounded-lg w-6 aspect-square flex justify-center items-center ${
+                        checkIsIncludedInMemory(word.id)
+                          ? "bg-[#e9e9e9]"
+                          : "bg-[#a5a5a5]"
+                      }`}
+                    >
+                      <FaCheck color={"#2d2d2d"} />
+                    </div>
+                  </button>
+                  {profile?.roll === "admin" && <OptionButton id={word.id} />}
+                </div>
                 <div
                   className={`w-full h-full flex flex-col justify-center items-center gap-10 bg-[#2d2d2d] rounded-lg ${
                     checkIsIncludedInMemory(word.id)

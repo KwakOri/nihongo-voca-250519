@@ -2,6 +2,7 @@
 
 import { supabase } from "@/db/supabase";
 import { useUserProfile } from "@/queries/auth/profiles";
+import { DBProfile } from "@/types/profiles";
 import { createContext, useContext, useEffect, useState } from "react";
 
 interface Session {
@@ -11,17 +12,10 @@ interface Session {
   };
 }
 
-interface Profile {
-  id: string;
-  name: string;
-  email: string;
-  created_at: Date;
-}
-
 type AuthContextType = {
   session: Session | null;
   userId: string | null;
-  profile: Profile | null;
+  profile: DBProfile | null;
   isLoading: boolean;
 };
 

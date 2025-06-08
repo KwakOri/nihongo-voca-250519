@@ -1,4 +1,5 @@
 import { supabase } from "@/db/supabase";
+import { DBWord } from "@/types/words";
 
 interface GetWordsOfDayProps {
   day: number;
@@ -145,4 +146,37 @@ export const syncMemoryLogs = async (
       console.error("추가 실패:", insertError);
     }
   }
+};
+
+export const deleteWord = async (wordId: number) => {
+  const { error } = await supabase.from("words").delete().eq("id", wordId);
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+type UpdateWordProps = {
+  word: Partial<DBWord> & { id: number };
+};
+
+export const updateWord = async ({ word }: UpdateWordProps) => {
+  const { id, ...updatedWord } = word;
+  const { error } = await supabase
+    .from("words")
+    .update(updatedWord)
+    .eq("id", id);
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const getWordById = async (id: number): Promise<DBWord> => {
+  const { data, error } = await supabase
+    .from("words")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
 };
