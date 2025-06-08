@@ -46,11 +46,7 @@ const OptionButton = ({ id }: { id: number }) => {
           ${isClosed ? "bg-[#e9e9e9]" : "bg-[#a5a5a5]"}
         `}
         >
-          <SlOptionsVertical
-            color={"#2d2d2d"}
-            className="transition-transform duration-300"
-            style={{ transform: isClosed ? "rotate(180deg)" : "rotate(0deg)" }}
-          />
+          <SlOptionsVertical color={"#2d2d2d"} />
         </div>
       </button>
       {!isClosed && (
